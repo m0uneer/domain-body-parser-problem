@@ -1,18 +1,13 @@
-Object.defineProperty(exports, "__esModule", { value: true });
+var domain = require('domain');
 
-// tslint:disable-next-line no-require-imports
-const domain = require('domain');
-
-/**
- * Patching global promise in response to https://github.com/nodejs/node-v0.x-archive/issues/8648
- */
+// Patching global promise in response to https://github.com/nodejs/node-v0.x-archive/issues/8648
 class PatchedPromise extends Promise {
   constructor(executor) {
-    const activeDomain = domain.active;
+    var activeDomain = domain.active;
     executor = activeDomain && activeDomain.bind(executor) || executor;
     // call native Promise constructor
     super(executor);
-    const then = this.then;
+    var then = this.then;
     this.then = function (onFulfilled, onRejected) {
       if (activeDomain) {
         onFulfilled = onFulfilled && activeDomain.bind(onFulfilled);
@@ -20,7 +15,7 @@ class PatchedPromise extends Promise {
       }
       return then.call(this, onFulfilled, onRejected);
     };
-    const catchy = this['catch'];
+    var catchy = this['catch'];
     this['catch'] = function (onRejected) {
       if (activeDomain) {
         onRejected = onRejected && activeDomain.bind(onRejected);
@@ -32,7 +27,7 @@ class PatchedPromise extends Promise {
 
 Promise = PatchedPromise;
 
-const __awaiter = function (thisArg, _arguments, P, generator) {
+var __awaiter = function (thisArg, _arguments, P, generator) {
   return new (P || (P = Promise))(function (resolve, reject) {
     function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
     function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
@@ -42,7 +37,6 @@ const __awaiter = function (thisArg, _arguments, P, generator) {
 };
 
 var express = require('express');
-
 var app = express();
 
 app.use(function(req, res, next) {
